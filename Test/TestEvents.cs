@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using Events;
 
@@ -11,16 +12,33 @@ namespace Tests
 
     public class TestEvents : MonoBehaviour
     {
+        public Text text;
+        public bool attachToEventBus = false;
         private int message;
+        private IEnumerator lastCoroutine;
 
         public void Add()
         {
-            this.events().Add<TestEvent>(OnEvent);
+            if (attachToEventBus)
+            {
+                EventBus.Instance.Add<TestEvent>(OnEvent);
+            }
+            else
+            {
+                this.events().Add<TestEvent>(OnEvent);
+            }
         }
 
         public void Remove()
         {
-            this.events().Remove<TestEvent>(OnEvent);
+            if (attachToEventBus)
+            {
+                EventBus.Instance.Remove<TestEvent>(OnEvent);
+            }
+            else
+            {
+                this.events().Remove<TestEvent>(OnEvent);
+            }
         }
 
         public void Trigger()
@@ -34,6 +52,21 @@ namespace Tests
         public void OnEvent(TestEvent evt)
         {
             Debug.Log(evt.field + " listened by " + gameObject);
+
+            if (lastCoroutine != null)
+            {
+                StopCoroutine(lastCoroutine);
+            }
+            lastCoroutine = blink();
+            StartCoroutine(lastCoroutine);
+        }
+
+        public IEnumerator blink()
+        {
+            text.color = Color.green;
+            yield return new WaitForSeconds(0.5f);
+            text.color = Color.white;
+            lastCoroutine = null;
         }
     }
 }
