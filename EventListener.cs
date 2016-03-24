@@ -6,42 +6,37 @@ namespace Events
 {
     public sealed class EventListener
     {
-        private Dictionary<Type, Delegate> events = new Dictionary<Type, Delegate>();
+        private ListenerDictionary<Type> listening = new ListenerDictionary<Type>();
+        private ListenerDictionary<Tuple<Type, EventListener>> listeningTo = new ListenerDictionary<Tuple<Type, EventListener>>();
 
-        public void Add<T>(DelegateEvent<T> listener) where T : Event
+        public void On<T>(DelegateEvent<T> listener) where T : Event
         {
-            Delegate previousListener;
-            if (events.TryGetValue(typeof(T), out previousListener))
-            {
-                events[typeof(T)] = (DelegateEvent<T>)previousListener + listener;
-            }
-            else
-            {
-                events[typeof(T)] = listener;
-            }
+            listening.Add(typeof(T), listener);
         }
 
-        public void Remove<T>(DelegateEvent<T> listener) where T : Event
+        public void On<T>(DelegateEvent<T> listener, EventListener to) where T : Event
         {
-            Delegate previousListener;
-            if (events.TryGetValue(typeof(T), out previousListener))
-            {
-                var result = (DelegateEvent<T>)previousListener - listener;
-                if (result == null)
-                {
-                    events.Remove(typeof(T));
-                }
-                else
-                {
-                    events[typeof(T)] = result;
-                }
-            }
+            to.On<T>(listener);
+            var key = new Tuple<Type, EventListener>(typeof(T), to);
+            listeningTo.Add(key, listener);
         }
 
-        public void Trigger<T>(T evt) where T : Event
+        public void Off<T>(DelegateEvent<T> listener) where T : Event
+        {
+            listening.Remove(typeof(T), listener);
+        }
+
+        public void Off<T>(DelegateEvent<T> listener, EventListener to) where T : Event
+        {
+            to.Off<T>(listener);
+            var key = new Tuple<Type, EventListener>(typeof(T), to);
+            listeningTo.Remove(key, listener);
+        }
+
+        public void Emit<T>(T evt) where T : Event
         {
             Delegate listener;
-            if (events.TryGetValue(typeof(T), out listener))
+            if (listening.TryGetValue(typeof(T), out listener))
             {
                 ((DelegateEvent<T>)listener)(evt);
             }
@@ -49,18 +44,13 @@ namespace Events
 
         public void RemoveAll()
         {
-            RemoveAll(events);
-        }
-        
-        public void RemoveAll(Dictionary<Type, Delegate> events)
-        {
-            foreach (var entry in events.ToList())
+            listening.Clear();
+
+            foreach (var entry in listeningTo)
             {
-                Delegate listener;
-                if (this.events.TryGetValue(entry.Key, out listener))
-                {
-                    this.events[entry.Key] = Delegate.RemoveAll(listener, entry.Value);
-                }
+                var type = entry.Key.Item1;
+                var to = entry.Key.Item2;
+                to.listening.Remove(type, entry.Value);
             }
         }
     }

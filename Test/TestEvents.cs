@@ -21,11 +21,11 @@ namespace Tests
         {
             if (attachToEventBus)
             {
-                EventBus.Instance.Add<TestEvent>(OnEvent);
+                EventBus.Instance.On<TestEvent>(OnEvent);
             }
             else
             {
-                this.events().Add<TestEvent>(OnEvent);
+                this.On<TestEvent>(OnEvent);
             }
         }
 
@@ -33,17 +33,17 @@ namespace Tests
         {
             if (attachToEventBus)
             {
-                EventBus.Instance.Remove<TestEvent>(OnEvent);
+                EventBus.Instance.Off<TestEvent>(OnEvent);
             }
             else
             {
-                this.events().Remove<TestEvent>(OnEvent);
+                this.Off<TestEvent>(OnEvent);
             }
         }
 
         public void Trigger()
         {
-            this.events().Trigger(new TestEvent()
+            this.Trigger(new TestEvent()
             {
                 field = "Message " + message++ + " from " + gameObject,
             });
