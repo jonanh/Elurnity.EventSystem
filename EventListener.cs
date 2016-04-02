@@ -6,12 +6,15 @@ namespace Events
 {
     public sealed class EventListener
     {
+        public static event DelegateEvent<Event> globalListener;
+
         private ListenerDictionary<Type> listening = new ListenerDictionary<Type>();
         private ListenerDictionary<Tuple<Type, EventListener>> listeningTo = new ListenerDictionary<Tuple<Type, EventListener>>();
 
         public void On<T>(DelegateEvent<T> listener) where T : Event
         {
             listening.Add(typeof(T), listener);
+            OnBaseEvents(typeof(T));
         }
 
         public void On<T>(DelegateEvent<T> listener, EventListener to) where T : Event
@@ -40,6 +43,11 @@ namespace Events
             {
                 ((DelegateEvent<T>)listener)(evt);
             }
+
+            if (globalListener != null)
+            {
+                globalListener(evt);
+            }
         }
 
         public void RemoveAll()
@@ -52,6 +60,25 @@ namespace Events
                 var to = entry.Key.Item2;
                 to.listening.Remove(type, entry.Value);
             }
+        }
+
+        private void OnBaseEvents(Type eventType)
+        {
+            var baseType = eventType.BaseType;
+            while (baseType != typeof(Event) && !listening.ContainsKey(baseType))
+            {
+                listening.Add(baseType, CreateListener(baseType));
+            }
+        }
+
+        private static Type delegateType = typeof(DelegateEvent<>);
+        private static DelegateEvent<Event> genericDelegate;
+
+        private Delegate CreateListener(Type eventType)
+        {
+            if (genericDelegate == null) genericDelegate = Emit;
+            var type = delegateType.MakeGenericType(new [] { eventType });
+            return Delegate.CreateDelegate(delegateType, this, genericDelegate.Method);
         }
     }
 }
