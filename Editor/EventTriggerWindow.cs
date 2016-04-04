@@ -13,9 +13,16 @@ namespace Events
         [Show]
         public void Trigger()
         {
-            foreach (var element in Selection.transforms)
+            if (Selection.transforms.Length > 0)
             {
-                element.Trigger(@event);
+                foreach (var element in Selection.transforms)
+                {
+                    element.Trigger(@event);
+                }
+            }
+            else
+            {
+                EventBus.Instance.Emit(@event);
             }
         }
 

@@ -15,6 +15,11 @@ namespace Events
             component.GetOrAddComponent<EventBehaviour>().Listener.On(listener, to.GetOrAddComponent<EventBehaviour>().Listener);
         }
 
+        public static void On<T>(this Component component, DelegateEvent<T> listener, EventListener to) where T : Event
+        {
+            component.GetOrAddComponent<EventBehaviour>().Listener.On(listener, to);
+        }
+
         public static void Off<T>(this Component component, DelegateEvent<T> listener) where T : Event
         {
             component.GetOrAddComponent<EventBehaviour>().Listener.Off(listener);
@@ -23,6 +28,11 @@ namespace Events
         public static void Off<T>(this Component component, DelegateEvent<T> listener, Component to) where T : Event
         {
             component.GetOrAddComponent<EventBehaviour>().Listener.Off(listener, to.GetOrAddComponent<EventBehaviour>().Listener);
+        }
+
+        public static void Off<T>(this Component component, DelegateEvent<T> listener, EventListener to) where T : Event
+        {
+            component.GetOrAddComponent<EventBehaviour>().Listener.Off(listener, to);
         }
 
         private static List<EventBehaviour> list = new List<EventBehaviour>();

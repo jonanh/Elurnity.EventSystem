@@ -21,7 +21,7 @@ namespace Tests
         {
             if (attachToEventBus)
             {
-                EventBus.Instance.On<TestEvent>(OnEvent);
+                this.On<TestEvent>(OnEvent, EventBus.Instance);
             }
             else
             {
@@ -33,7 +33,7 @@ namespace Tests
         {
             if (attachToEventBus)
             {
-                EventBus.Instance.Off<TestEvent>(OnEvent);
+                this.Off<TestEvent>(OnEvent, EventBus.Instance);
             }
             else
             {
