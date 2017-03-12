@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 
-namespace Events
+namespace Elurnity.EventSystem
 {
     public sealed class EventBehaviour : MonoBehaviour
     {
