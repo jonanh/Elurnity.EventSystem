@@ -44,10 +44,6 @@
       <Project>{D4195F92-F409-429E-B8B2-ABC26F38CE35}</Project>
       <Name>Elurnity.EventSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Elurnity.EventSystem.Unity\Elurnity.EventSystem.Unity.csproj">
-      <Project>{93DF64C4-CCFD-44F7-8863-6EBDD74E52E5}</Project>
-      <Name>Elurnity.EventSystem.Unity</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
