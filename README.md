@@ -1,5 +1,7 @@
-# Elurnity.EventSystem
+# Elurnity.EventSystem [![Build Status](https://api.travis-ci.org/jonanh/Elurnity.EventSystem.svg?branch=master)](https://travis-ci.org/jonanh/Elurnity.EventSystem) #
 Event system for Unity3D
+
+
 
 ## Features
 - Strongly typed events.
