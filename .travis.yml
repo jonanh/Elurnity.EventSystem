@@ -1,0 +1,9 @@
+language: csharp
+solution: Elurnity.EventSystem.sln
+install:
+  - nuget restore Elurnity.EventSystem.sln
+  - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release Elurnity.EventSystem.sln
+  - mono ./testrunner/NUnit.ConsoleRunner*/tools/nunit3-console.exe ./*/bin/Release/*Tests.dll
+
